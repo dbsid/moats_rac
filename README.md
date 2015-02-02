@@ -208,7 +208,7 @@ To use a non-default refresh rate, supply it as follows:
    +-------------------------------------+
 ```
 
-To display with a bigger screen size, make sure the arraysize is set to double fo screen size=160.
+To display with a bigger screen size, make sure the arraysize is set to double fo screen size=120.
 ```
    +----------------------------------------------------+
    | SQL> set arraysize 120                             |
