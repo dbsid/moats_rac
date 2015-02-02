@@ -1,9 +1,7 @@
 
-Mother Of All Tuning Scripts (MOATS) README
-===========================================
+H1 Mother Of All Tuning Scripts (MOATS) README
 
-Copyright Information
-=====================
+H2 Copyright Information
 MOATS v1.06, April 2011
 (c) Adrian Billington www.oracle-developer.net
 (c) Tanel Poder       www.e2sn.com
@@ -11,27 +9,26 @@ MOATS v1.06, April 2011
 MOATS v2.0.6, Jan 2015
 (c) Sidney Chen www.dbsid.com
 
-Contents
-========
-1.0 Introduction
-2.0 Supported Versions
-3.0 Installation & Removal
-   3.1 Prerequisites
-      3.1.1 System Privileges
-      3.1.2 Object Privileges
-   3.2 Installation
-   3.3 Removal
-4.0 Usage
-   4.1 SQL*Plus Setup
-      4.1.1 Window Size
-      4.1.2 SQL*Plus Settings
-   4.2 MOATS TOP Usage
-      4.2.1 Using MOATS.TOP directly
-      4.2.2 Using the TOP view
-   4.3 Other MOATS APIs
-5.0 Roadmap
-6.0 Disclaimer
-7.0 Acknowledgements
+H2 Contents
+1. Introduction
+2. Supported Versions
+3. Installation & Removal
+..3.1 Prerequisites
+....3.1.1 System Privileges
+....3.1.2 Object Privileges
+..3.2 Installation
+..3.3 Removal
+4. Usage
+..4.1 SQL*Plus Setup
+....4.1.1 Window Size
+....4.1.2 SQL*Plus Settings
+..4.2 MOATS TOP Usage
+....4.2.1 Using MOATS.TOP directly
+....4.2.2 Using the TOP view
+..4.3 Other MOATS APIs
+5. Roadmap
+6. Disclaimer
+7. Acknowledgements
 
  
 1.0 Introduction
