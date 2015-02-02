@@ -125,16 +125,16 @@ It is recommended that this application is installed in a "TOOLS" schema, but wh
 ```
 
   *** Note: 
-         a) SELECT ANY DICTIONARY can be granted in place of the specific V$ view grants above
-         b) Supplied scripts will grant/revoke all of the above to/from the MOATS target schema/role.
+  1. SELECT ANY DICTIONARY can be granted in place of the specific V$ view grants above
+  2. Supplied scripts will grant/revoke all of the above to/from the MOATS target schema/role.
 
 3.2 Installation
 ----------------
 MOATS can be installed using sqlplus or any tools that fully support sqlplus commands. To install MOATS:
 
-1) Ensure that the MOATS owner schema has the required privileges described in Section 3.1 above. A script named moats_privs_grant.sql is supplied if required (this will need to be run as a user with admin grant rights on SYS objects. This script will prompt for the name of the target MOATS schema).
+1. Ensure that the MOATS owner schema has the required privileges described in Section 3.1 above. A script named moats_privs_grant.sql is supplied if required (this will need to be run as a user with admin grant rights on SYS objects. This script will prompt for the name of the target MOATS schema).
 
-2) To install MOATS, login as the target schema and run the moats_install.sql script. A warning will prompt for a continue/cancel option.
+2. To install MOATS, login as the target schema and run the moats_install.sql script. A warning will prompt for a continue/cancel option.
 
 3.3 Removal
 -----------
