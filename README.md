@@ -1,7 +1,7 @@
 
-H1 Mother Of All Tuning Scripts (MOATS) README
+# H1 Mother Of All Tuning Scripts (MOATS) README
 
-H2 Copyright Information
+# H2 Copyright Information
 MOATS v1.06, April 2011
 (c) Adrian Billington www.oracle-developer.net
 (c) Tanel Poder       www.e2sn.com
@@ -9,7 +9,7 @@ MOATS v1.06, April 2011
 MOATS v2.0.6, Jan 2015
 (c) Sidney Chen www.dbsid.com
 
-H2 Contents
+# H2 Contents
 1. Introduction
 2. Supported Versions
 3. Installation & Removal
