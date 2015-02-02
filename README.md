@@ -1,7 +1,7 @@
 
-# H1 Mother Of All Tuning Scripts (MOATS) README
+# Mother Of All Tuning Scripts (MOATS) README
 
-# H2 Copyright Information
+## Copyright Information
 MOATS v1.06, April 2011
 (c) Adrian Billington www.oracle-developer.net
 (c) Tanel Poder       www.e2sn.com
@@ -9,7 +9,7 @@ MOATS v1.06, April 2011
 MOATS v2.0.6, Jan 2015
 (c) Sidney Chen www.dbsid.com
 
-# H2 Contents
+## Contents
 1. Introduction
 2. Supported Versions
 3. Installation & Removal
@@ -38,7 +38,7 @@ MOATS is a simple tuning tool that samples active sessions and reports top datab
 In V2.0, MOATS is extended as a RAC Dashbooard, it's now capable of monitoring the ASH and Activity Stats on all the instances.
 
 Examples of how this application might be used:
-
+```
    -- To report top session and instance activity at 5 second intervals...
    -- The default window size is 40 * 175, the arraysize should be set to 80 = 40 * 2
    -- --------------------------------------------------------------------------------
@@ -86,7 +86,7 @@ Examples of how this application might be used:
 + TOP SQL_ID ----+ PLAN_HASH_VALUE + SQL TEXT ------------------------------------------------------------------------------------------------------------------------------+
 | 539d8b7druy5x  | 1547908977      | select /*+ parallel(16)*/ count(*) from t, t                                                                                           |
 +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
-
+```
    
 2.0 Supported Versions
 ======================
