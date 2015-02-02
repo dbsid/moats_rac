@@ -103,13 +103,16 @@ It is recommended that this application is installed in a "TOOLS" schema, but wh
 
 3.1.1 System Privileges
 -----------------------   
+```
    * CREATE TYPE
    * CREATE TABLE
    * CREATE VIEW
    * CREATE PROCEDURE
+```
 
 3.1.2 Object Privileges
 -----------------------
+```
    * EXECUTE ON DBMS_LOCK
    * SELECT ON V_$DATABASE    ***
    * SELECT ON GV_$SESSION    ***
@@ -119,6 +122,7 @@ It is recommended that this application is installed in a "TOOLS" schema, but wh
    * SELECT ON GV_$LATCH      ***
    * SELECT ON GV_$TIMER      ***
    * SELECT ON GV_$SQL        ***
+```
 
   *** Note: 
          a) SELECT ANY DICTIONARY can be granted in place of the specific V$ view grants above
@@ -149,7 +153,7 @@ MOATS TOP output is of a fixed size so needs some specific settings.
 4.1.1 Window Size
 -----------------------
 By default, the window size is 40 * 175, the ASH height is 13, The sql height is 8. You can customize the Windows size by the arguments p_screen_size, p_ash_height and p_sql_height, when invoking the moats.top functio to start the monitoring. 
-
+```
    function top (
             p_refresh_rate    in integer default null,
             p_screen_size     in integer default null,
@@ -157,18 +161,20 @@ By default, the window size is 40 * 175, the ASH height is 13, The sql height is
             p_sql_height      in integer default null,
             p_ash_window_size in integer default null
             ) return moats_output_ntt pipelined;
+```
 
 4.1.2 SQL*Plus Settings
 -----------------------
 The linesize should be at least 175, the arraysize should be exactly double of the screen size, by default, the screen size is 40, arraysize is 80. If you customize the screen size to 60, then the arraysize should be set to 120.
 MOATS comes with a moats_settings.sql file that does the following: 
-
+```
    * set arrays 80
    * set lines 175
    * set head off
    * set tab off
    * set pages 0
    * set serveroutput on format wrapped
+```
 
 These are default sqlplus settings for the MOATS TOP utility and need to be set before running it (see Usage below).
 
@@ -178,33 +184,41 @@ MOATS.TOP is a pipelined function that outputs instance performance statistics a
 
 4.2.1 Using MOATS.TOP directly
 ------------------------------
-
+```
    +-------------------------------------+
    | SQL> @q                             |
    +-------------------------------------+
+```
 
+```
    +-------------------------------------+
    | SQL> @moats_settings.sql            |
    |                                     |
    | SQL> SELECT *                       |
    |  2   FROM   TABLE(moats.top);       |
    +-------------------------------------+
+```
 
 To use a non-default refresh rate, supply it as follows:
 
+```
    +-------------------------------------+
    | SQL> SELECT *                       |
    |  2   FROM   TABLE(moats.top(5));    |
    +-------------------------------------+
+```
 
 To display with a bigger screen size, make sure the arraysize is set to double fo screen size=160.
+```
    +----------------------------------------------------+
    | SQL> set arraysize 120                             |
    | SQL> SELECT *                                      |
    |  2   FROM   TABLE(moats.top(p_screen_size->60));   |
    +----------------------------------------------------+
+```
 
 To display with a bigger screen size, with customized ash height and sql height, make sure the arraysize is set to double fo screen size.
+```
    +----------------------------------------------------+
    | SQL> set arraysize 120                             |
    | SQL> SELECT *                                      |
@@ -212,6 +226,7 @@ To display with a bigger screen size, with customized ash height and sql height,
    |                              p_ash_height=>20,     |
    |                              p_sql_height=>15));   |
    +----------------------------------------------------+
+```
 
 To use a non-default screen size
 
@@ -220,15 +235,15 @@ To stop MOATS.TOP refreshes, use a Ctrl-C interrupt.
 4.2.2 Using the TOP view
 ------------------------
 A view named TOP is included with MOATS for convenience.
-
+```
    +-------------------------------------+
    | SQL> @moats_settings.sql            |
    |                                     |
    | SQL> SELECT * FROM top;             |
    +-------------------------------------+
-
+```
 To set a non-default value for refresh rate, set the MOATS refresh rate parameter, as follows.
-
+```
    +--------------------------------------------------------------+
    | SQL> @moats_settings.sql                                     |
    |                                                              |
@@ -236,7 +251,7 @@ To set a non-default value for refresh rate, set the MOATS refresh rate paramete
    |                                                              |
    | SQL> SELECT * FROM top;                                      |
    +--------------------------------------------------------------+
-
+```
 This example uses a 3 second refresh rate.
 
 4.3 Other MOATS APIs
