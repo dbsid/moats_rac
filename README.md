@@ -1,3 +1,4 @@
+![](https://github.com/dbsid/moats_rac/blob/master/moats_rac.gif)
 
 # Mother Of All Tuning Scripts (MOATS) README
 
