@@ -263,7 +263,7 @@ There is no fixed roadmap at the time of writing. Features that Tanel and Adrian
 
 ## 6.0 Disclaimer
 ==============
-This software is supplied in good faith and is free for download, but any subsequent use is entirely at the end-users' risk. Adrian Billington/www.oracle-developer.net and Tanel Poder/www.e2sn.com do not accept any responsibility for problems arising as a result of using MOATS. All users are strongly advised to read the installation and removal scripts prior to running them and test the application in an appropriate environment.
+This software is supplied in good faith and is free for download, but any subsequent use is entirely at the end-users' risk. Adrian Billington(www.oracle-developer.net), Tanel Poder(www.e2sn.com), Sidney Chen(www.dbsid.com) do not accept any responsibility for problems arising as a result of using MOATS. All users are strongly advised to read the installation and removal scripts prior to running them and test the application in an appropriate environment.
 
 ## 7.0 Acknowledgements
 ====================
