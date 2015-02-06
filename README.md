@@ -31,8 +31,7 @@ MOATS v2.0.6, Jan 2015
 7. Acknowledgements
 
  
-1.0 Introduction
-================
+## 1.0 Introduction
 MOATS is a simple tuning tool that samples active sessions and reports top database activity in regular screen refreshes at specified intervals (similar to the TOP utility for UNIX). MOATS is designed to run in sqlplus only and has recommended display settings to enable screen refreshes.
 
 In V2.0, MOATS is extended as a RAC Dashbooard, it's now capable of monitoring the ASH and Activity Stats on all the instances.
@@ -88,20 +87,17 @@ Examples of how this application might be used:
 +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
 ```
    
-2.0 Supported Versions
-======================
+## 2.0 Supported Versions
 MOATS V2.0 supports all Oracle versions of 11g Release 1 and above. 
 
 
-3.0 Installation & Removal
-==========================
+## 3.0 Installation & Removal
 MOATS requires several database objects to be created. The privileges, installation and removal steps are described below.
 
-3.1 Prerequisites
------------------
+### 3.1 Prerequisites
 It is recommended that this application is installed in a "TOOLS" schema, but whichever schema is used requires the following privileges. Note that any or all of these grants can be assigned to either the MOATS target schema itself or a role that is granted to the MOATS target schema.
 
-3.1.1 System Privileges
+#### System Privileges
 -----------------------   
 ```
    * CREATE TYPE
@@ -110,7 +106,7 @@ It is recommended that this application is installed in a "TOOLS" schema, but wh
    * CREATE PROCEDURE
 ```
 
-3.1.2 Object Privileges
+#### Object Privileges
 -----------------------
 ```
    * EXECUTE ON DBMS_LOCK
@@ -128,7 +124,7 @@ It is recommended that this application is installed in a "TOOLS" schema, but wh
   1. SELECT ANY DICTIONARY can be granted in place of the specific V$ view grants above
   2. Supplied scripts will grant/revoke all of the above to/from the MOATS target schema/role.
 
-3.2 Installation
+### Installation
 ----------------
 MOATS can be installed using sqlplus or any tools that fully support sqlplus commands. To install MOATS:
 
@@ -136,21 +132,20 @@ MOATS can be installed using sqlplus or any tools that fully support sqlplus com
 
 2. To install MOATS, login as the target schema and run the moats_install.sql script. A warning will prompt for a continue/cancel option.
 
-3.3 Removal
+### Removal
 -----------
 To remove MOATS, login as the MOATS owner schema and run the moats_remove.sql script. A warning will prompt for a continue/cancel option.
 
 To revoke all related privileges from the MOATS owner schema, a script named moats_privs_revoke.sql is supplied if required (this will need to be run as a user with admin grant rights on SYS objects. This script will prompt for the name of the target MOATS schema).
 
-4.0 Usage
-=========
+## Usage
 MOATS is simple to use. It is designed for sqlplus only and makes use of sqlplus and PL/SQL functionality to provide real-time screen refreshes. To make the most of MOATS v2.0, follow the steps below.
 
-4.1 SQL*Plus Setup
+### SQL*Plus Setup
 ------------------
 MOATS TOP output is of a fixed size so needs some specific settings.
 
-4.1.1 Window Size
+#### Window Size
 -----------------------
 By default, the window size is 40 * 175, the ASH height is 13, The sql height is 8. You can customize the Windows size by the arguments p_screen_size, p_ash_height and p_sql_height, when invoking the moats.top functio to start the monitoring. 
 ```
@@ -163,7 +158,7 @@ By default, the window size is 40 * 175, the ASH height is 13, The sql height is
             ) return moats_output_ntt pipelined;
 ```
 
-4.1.2 SQL*Plus Settings
+#### SQL*Plus Settings
 -----------------------
 The linesize should be at least 175, the arraysize should be exactly double of the screen size, by default, the screen size is 40, arraysize is 80. If you customize the screen size to 60, then the arraysize should be set to 120.
 MOATS comes with a moats_settings.sql file that does the following: 
@@ -178,11 +173,11 @@ MOATS comes with a moats_settings.sql file that does the following:
 
 These are default sqlplus settings for the MOATS TOP utility and need to be set before running it (see Usage below).
 
-4.2 MOATS TOP Usage
+### MOATS TOP Usage
 -------------------
 MOATS.TOP is a pipelined function that outputs instance performance statistics at a given refresh interval. Before running TOP, the moats_settings.sql script (or equivalent) should be run in the sqlplus session, or you can call q.sql directly. The following example refreshes the instance statistics at the default 10 seconds:
 
-4.2.1 Using MOATS.TOP directly
+#### Using MOATS.TOP directly
 ------------------------------
 ```
    +-------------------------------------+
@@ -232,7 +227,7 @@ To use a non-default screen size
 
 To stop MOATS.TOP refreshes, use a Ctrl-C interrupt.
 
-4.2.2 Using the TOP view
+#### Using the TOP view
 ------------------------
 A view named TOP is included with MOATS for convenience.
 ```
@@ -254,21 +249,21 @@ To set a non-default value for refresh rate, set the MOATS refresh rate paramete
 ```
 This example uses a 3 second refresh rate.
 
-4.3 Other MOATS APIs
+### Other MOATS APIs
 --------------------
 MOATS contains several other public APIs that are currently for internal use only. These will be fully described and "released" with future MOATS versions but are currently only supported for use by MOATS.TOP. They include pipelined functions to query the active session data that MOATS gathers. 
 
-5.0 Roadmap
+## Roadmap
 ===========
 There is no fixed roadmap at the time of writing. Features that Tanel and Adrian would like to add (but are not limited to) the following:
 
    * formally expose the active session query functions for custom-reporting
    * add drill-down functionality for SQL statements of interest in the TOP output
 
-6.0 Disclaimer
+## Disclaimer
 ==============
 This software is supplied in good faith and is free for download, but any subsequent use is entirely at the end-users' risk. Adrian Billington/www.oracle-developer.net and Tanel Poder/www.e2sn.com do not accept any responsibility for problems arising as a result of using MOATS. All users are strongly advised to read the installation and removal scripts prior to running them and test the application in an appropriate environment.
 
-7.0 Acknowledgements
+## Acknowledgements
 ====================
 Many thanks to Randolf Geist for his contributions to MOATS, including several bug-fixes to the original alpha version.
