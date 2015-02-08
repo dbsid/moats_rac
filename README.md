@@ -35,7 +35,7 @@ MOATS v2.0.6, Jan 2015
 ## 1.0 Introduction
 MOATS is a simple tuning tool that samples active sessions and reports top database activity in regular screen refreshes at specified intervals (similar to the TOP utility for UNIX). MOATS is designed to run in sqlplus only and has recommended display settings to enable screen refreshes.
 
-In V2.0, MOATS is extended as a RAC Dashbooard, it's now capable of monitoring the ASH and Activity Stats on all the instances.
+In V2.0, MOATS is extended as a RAC Dashbooard, it's now capable of monitoring the ASH and Activity Stats on all the instances. Just for fun, MOATS RAC can display the colourful Active Session Graph for both xterm and xterm-256color.
 
 Examples of how this application might be used:
 ```
@@ -161,11 +161,12 @@ By default, the window size is 40 * 175, the ASH height is 13, The sql height is
 
 #### 4.1.2 SQL*Plus Settings
 -----------------------
-The linesize should be at least 175, the arraysize should be exactly double of the screen size, by default, the screen size is 40, arraysize is 80. If you customize the screen size to 60, then the arraysize should be set to 120.
+Although the number of charaters on each line is no more than 175, the linesize setting should be at least 2000, since the output contains lots of invisible charaters to draw the color active session graph. The arraysize should be exactly double of the screen size, by default, the screen size is 40, arraysize is 80. If you customize the screen size to 60, then the arraysize should be set to 120.
 MOATS comes with a moats_settings.sql file that does the following: 
 ```
    * set arrays 80
-   * set lines 175
+   * set lines 2000
+   * set trims on
    * set head off
    * set tab off
    * set pages 0

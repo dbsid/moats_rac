@@ -37,6 +37,11 @@ create or replace package body moats as
    gc_io          constant varchar2(1)     := '*';
    gc_others      constant varchar2(1)     := '@';
 
+   gc_cpu_color_prefix        constant varchar2(50)    := chr(27) || '[38;5;46m';
+   gc_io_color_prefix         constant varchar2(50)    := chr(27) || '[38;5;21m';
+   gc_others_color_prefix     constant varchar2(50)    := chr(27) || '[38;5;124m';
+   gc_color_postfix           constant varchar2(50)    := chr(27) || '[0m';
+
    gc_max_screen_size      constant pls_integer     := 100;
    gc_default_screen_size  constant pls_integer     := 40;
    gc_default_ash_height   constant pls_integer     := 13;
@@ -55,7 +60,7 @@ create or replace package body moats as
    g_ash_spaces        varchar2(100);
    g_ash_scales_height pls_integer;
 
-   type ash_lines_aat is table of varchar2(86);
+   type ash_lines_aat is table of varchar2(4000);
    g_ash_lines ash_lines_aat := ash_lines_aat();
 
    type ash_scales_aat is table of integer;
@@ -82,6 +87,16 @@ create or replace package body moats as
 --      insert into moats_ash_dump select * from table(moats.get_ash);
 --      commit;
 --   end dump_ash;
+
+   ----------------------------------------------------------------------------
+   function to_color( p_str in varchar2 ) return varchar2 is
+   v_str varchar2(4000);
+   begin
+      v_str := regexp_replace(p_str, '(\' || gc_cpu    || '[\' || gc_cpu    || ' ]*)', gc_cpu_color_prefix    || '\1' || gc_color_postfix);
+      v_str := regexp_replace(v_str, '(\' || gc_io     || '[\' || gc_io     || ' ]*)', gc_io_color_prefix     || '\1' || gc_color_postfix);
+      v_str := regexp_replace(v_str, '(\' || gc_others || '[\' || gc_others || ' ]*)', gc_others_color_prefix || '\1' || gc_color_postfix);
+      return v_str;
+   end to_color;
 
    ----------------------------------------------------------------------------
    procedure show_snaps is
@@ -837,9 +852,8 @@ create or replace package body moats as
       v_rows.extend(2);
       v_rows(1) := moats_output_ot(lpad('_______                                Active Session Graph                                    _______', 173,' '));
       v_rows(2) := moats_output_ot(
-                      rpad(
-                      rpad('+   AAS| TOP|Instance| Top Events',51,'-') || '+ WAIT CLASS -+'  || 
-                           lpad(g_ash_scales(1),10) || ' | CPU:+  IO:*  Others:@', 166, ' ') ||
+                      rpad('+   AAS| TOP|Instance| Top Events',51,'-') || '+ WAIT CLASS -+'  || lpad(g_ash_scales(1),10) ||
+                      to_color(rpad(' | CPU:' || gc_cpu || ' IO:' || gc_io || ' Others:' || gc_others, 90, ' ')) ||
                            '| ' || g_ash_scales(1)
                       );
 
@@ -858,7 +872,7 @@ create or replace package body moats as
                      then rpad('+',65,'-') || '+'
                      else rpad(' ', 66)
                   end;
-         v_row := v_row ||  lpad(g_ash_scales(i+1), 10) || ' | ' || g_ash_lines(i) || ' | ' || rpad(g_ash_scales(i+1), 6);
+         v_row := v_row ||  lpad(g_ash_scales(i+1), 10) || ' | ' || to_color(g_ash_lines(i)) || ' | ' || rpad(g_ash_scales(i+1), 6);
 
          v_rows(v_rows.last) := moats_output_ot(v_row);
       end loop;

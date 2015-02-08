@@ -1,6 +1,7 @@
 
 set arrays 80
-set lines 175
+set lines 2000
+set trims on
 set head off
 set tab off
 set pages 0
