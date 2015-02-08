@@ -99,6 +99,16 @@ create or replace package body moats as
    end to_color;
 
    ----------------------------------------------------------------------------
+   function to_color_ash( p_str in varchar2 ) return varchar2 is
+   v_str varchar2(4000);
+   begin
+      v_str := regexp_replace(p_str, '(\' || gc_cpu    || '[\' || gc_cpu    || ' ]*)', gc_cpu_color_prefix    || '\1');
+      v_str := regexp_replace(v_str, '(\' || gc_io     || '[\' || gc_io     || ' ]*)', gc_io_color_prefix     || '\1');
+      v_str := regexp_replace(v_str, '(\' || gc_others || '[\' || gc_others || ' ]*)', gc_others_color_prefix || '\1');
+      return v_str || gc_color_postfix;
+   end to_color_ash;
+
+   ----------------------------------------------------------------------------
    procedure show_snaps is
       v_indx pls_integer;
    begin
@@ -125,7 +135,7 @@ create or replace package body moats as
                 moats_output_ot('MOATS: The Mother Of All Tuning Scripts v1.0 by Adrian Billington & Tanel Poder'),
                 moats_output_ot('       http://www.oracle-developer.net & http://www.e2sn.com'),
                 moats_output_ot(''),
-                moats_output_ot('MOATS RAC Dashboard: V2.0.6 ASH & STATS Monitoring For RAC by Sidney Chen'),
+                moats_output_ot('MOATS RAC Dashboard: V2.0.7 ASH & STATS Monitoring For RAC by Sidney Chen'),
                 moats_output_ot('       sidney.chen@oracle.com(http://dbsid.com)')
                 );
    end banner;
@@ -872,7 +882,7 @@ create or replace package body moats as
                      then rpad('+',65,'-') || '+'
                      else rpad(' ', 66)
                   end;
-         v_row := v_row ||  lpad(g_ash_scales(i+1), 10) || ' | ' || to_color(g_ash_lines(i)) || ' | ' || rpad(g_ash_scales(i+1), 6);
+         v_row := v_row ||  lpad(g_ash_scales(i+1), 10) || ' | ' || to_color_ash(g_ash_lines(i)) || ' | ' || rpad(g_ash_scales(i+1), 6);
 
          v_rows(v_rows.last) := moats_output_ot(v_row);
       end loop;
