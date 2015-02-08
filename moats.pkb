@@ -62,6 +62,7 @@ create or replace package body moats as
 
    type ash_lines_aat is table of varchar2(4000);
    g_ash_lines ash_lines_aat := ash_lines_aat();
+   g_ash_lines_color ash_lines_aat := ash_lines_aat();
 
    type ash_scales_aat is table of integer;
    g_ash_scales ash_scales_aat := ash_scales_aat();
@@ -240,6 +241,7 @@ create or replace package body moats as
       g_ash_aas.extend(gc_ash_graph_length);
       g_ash_graph.extend(gc_ash_graph_length);
       g_ash_lines.extend(g_ash_height);
+      g_ash_lines_color.extend(g_ash_height);
       g_ash_scales.extend(g_ash_scales_height);
 
       for i in 1 .. g_ash_aas.count loop
@@ -663,6 +665,94 @@ create or replace package body moats as
    end instance_summary;
 
    ----------------------------------------------------------------------------
+   procedure draw_active_session_graph ( p_lower_snap in pls_integer,
+                          p_upper_snap in pls_integer) is
+
+      v_snaps     pls_integer;
+
+      -- Variables to draw active session graph...
+      -- --------------------------------------------------
+      v_max_aas pls_integer;
+      v_line varchar2(200);
+      v_idx  integer;
+   begin
+
+      -- Calculate number of ASH snapshot for this output...
+      -- --------------------------------------------------
+      v_snaps := ash_snap_count( p_lower_snap => p_lower_snap,
+                                     p_upper_snap => p_upper_snap );
+
+      -- Fetch aas, cpu_aas , io_aas...
+      -- -------------------------------
+      select count(*)/v_snaps aas,
+             sum(case when wait_class='ON CPU' then 1 else 0 end)/v_snaps cpu_aas,
+             sum(case when wait_class='User I/O' then 1 else 0 end)/v_snaps io_aas
+      into g_ash_aas(g_ash_idx).aas, g_ash_aas(g_ash_idx).cpu_aas, g_ash_aas(g_ash_idx).io_aas
+      from   table(
+                moats.get_ash(
+                   p_lower_snap, p_upper_snap, moats.gc_all_rows));
+      
+      select case when max(aas) <= g_ash_height then g_ash_height else ceil(max(aas)) end
+      into v_max_aas
+      from  table(g_ash_aas);
+
+      if v_max_aas = g_max_aas_current then
+
+      -- Only draw the lastest sample
+      -- -------------------------------
+         g_ash_graph(g_ash_idx) :=  ash_graph_ot(rpad(nvl(
+                                    rpad(gc_cpu, round((g_ash_aas(g_ash_idx).cpu_aas/g_max_aas_current) * g_ash_height), gc_cpu) ||
+                                    rpad(gc_io, round((g_ash_aas(g_ash_idx).io_aas/g_max_aas_current) * g_ash_height), gc_io) || 
+                                    rpad(gc_others, round(((g_ash_aas(g_ash_idx).aas - g_ash_aas(g_ash_idx).cpu_aas - g_ash_aas(g_ash_idx).io_aas)/g_max_aas_current) * g_ash_height), gc_others), ' '), 
+                                    g_ash_height, ' '));
+         for i in 1 .. g_ash_height loop
+            g_ash_lines(i) := substr(g_ash_lines(i), 2, gc_ash_graph_length-1) || substr(g_ash_graph(g_ash_idx).graph, g_ash_height-i+1, 1);
+         end loop;
+      else
+
+      -- Re-draw al the samples
+      -- -------------------------------
+         g_max_aas_current := v_max_aas;
+         for i in 1 .. gc_ash_graph_length loop
+            if round((g_ash_aas(i).aas/g_max_aas_current) * g_ash_height) < 1 then
+               g_ash_graph(i) := ash_graph_ot(g_ash_spaces);
+            else
+               g_ash_graph(i) :=  ash_graph_ot(rpad(nvl(
+                                          rpad(gc_cpu, round((g_ash_aas(i).cpu_aas/g_max_aas_current) * g_ash_height), gc_cpu) ||
+                                          rpad(gc_io, round((g_ash_aas(i).io_aas/g_max_aas_current) * g_ash_height), gc_io) || 
+                                          rpad(gc_others, round(((g_ash_aas(i).aas - g_ash_aas(i).cpu_aas - g_ash_aas(i).io_aas)/g_max_aas_current) * g_ash_height), gc_others), ' '), 
+                                          g_ash_height, ' '));
+            end if;
+         end loop;
+         for i in 1 .. g_ash_height loop
+            v_line := '';
+            for j in 1 .. gc_ash_graph_length loop
+              v_line := v_line || substr(g_ash_graph(mod(g_ash_idx+j-1, gc_ash_graph_length)+1).graph, g_ash_height-i+1, 1);
+            end loop;
+            g_ash_lines(i) := v_line;
+         end loop;
+
+      -- Re-draw the scales
+      -- -------------------------------
+      for i in 1 .. g_ash_scales.count loop
+         g_ash_scales(i) := round(g_max_aas_current * (g_ash_scales_height-i+1)/g_ash_height);
+      end loop;
+      end if;
+
+      -- trun the g_ash_lines into colourfull
+      -- ------------------------------------
+      for i in 1 .. g_ash_height loop
+         g_ash_lines_color(i) := to_color_ash(g_ash_lines(i));
+      end loop;
+   
+      g_ash_idx := g_ash_idx + 1;
+      if g_ash_idx > gc_ash_graph_length then
+         g_ash_idx := 1;
+      end if;
+
+   end draw_active_session_graph;
+
+   ----------------------------------------------------------------------------
    function top_summary ( p_lower_snap in pls_integer,
                           p_upper_snap in pls_integer,
                           p_refresh_rate in pls_integer) return moats_output_ntt is
@@ -694,11 +784,6 @@ create or replace package body moats as
       v_samples   pls_integer;
       v_snaps     pls_integer;
 
-      -- Variables to draw active session graph...
-      -- --------------------------------------------------
-      v_max_aas pls_integer;
-      v_line varchar2(200);
-      v_idx  integer;
    begin
 
       -- Calculate number of ASH snapshot for this output...
@@ -796,67 +881,6 @@ create or replace package body moats as
             )
       where  rownum <= g_ash_height;
 
-      -- Fetch aas, cpu_aas , io_aas...
-      -- -------------------------------
-      select count(*)/v_snaps aas,
-             sum(case when wait_class='ON CPU' then 1 else 0 end)/v_snaps cpu_aas,
-             sum(case when wait_class='User I/O' then 1 else 0 end)/v_snaps io_aas
-      into g_ash_aas(g_ash_idx).aas, g_ash_aas(g_ash_idx).cpu_aas, g_ash_aas(g_ash_idx).io_aas
-      from   table(
-                moats.get_ash(
-                   p_lower_snap, p_upper_snap, moats.gc_all_rows));
-      
-      select case when max(aas) <= g_ash_height then g_ash_height else ceil(max(aas)) end
-      into v_max_aas
-      from  table(g_ash_aas);
-
-      if v_max_aas = g_max_aas_current then
-
-      -- Only draw the lastest sample
-      -- -------------------------------
-         g_ash_graph(g_ash_idx) :=  ash_graph_ot(rpad(nvl(
-                                    rpad(gc_cpu, round((g_ash_aas(g_ash_idx).cpu_aas/g_max_aas_current) * g_ash_height), gc_cpu) ||
-                                    rpad(gc_io, round((g_ash_aas(g_ash_idx).io_aas/g_max_aas_current) * g_ash_height), gc_io) || 
-                                    rpad(gc_others, round(((g_ash_aas(g_ash_idx).aas - g_ash_aas(g_ash_idx).cpu_aas - g_ash_aas(g_ash_idx).io_aas)/g_max_aas_current) * g_ash_height), gc_others), ' '), 
-                                    g_ash_height, ' '));
-         for i in 1 .. g_ash_height loop
-            g_ash_lines(i) := substr(g_ash_lines(i), 2, gc_ash_graph_length-1) || substr(g_ash_graph(g_ash_idx).graph, g_ash_height-i+1, 1);
-         end loop;
-      else
-
-      -- Re-draw al the samples
-      -- -------------------------------
-         g_max_aas_current := v_max_aas;
-         for i in 1 .. gc_ash_graph_length loop
-            if round((g_ash_aas(i).aas/g_max_aas_current) * g_ash_height) < 1 then
-               g_ash_graph(i) := ash_graph_ot(g_ash_spaces);
-            else
-               g_ash_graph(i) :=  ash_graph_ot(rpad(nvl(
-                                          rpad(gc_cpu, round((g_ash_aas(i).cpu_aas/g_max_aas_current) * g_ash_height), gc_cpu) ||
-                                          rpad(gc_io, round((g_ash_aas(i).io_aas/g_max_aas_current) * g_ash_height), gc_io) || 
-                                          rpad(gc_others, round(((g_ash_aas(i).aas - g_ash_aas(i).cpu_aas - g_ash_aas(i).io_aas)/g_max_aas_current) * g_ash_height), gc_others), ' '), 
-                                          g_ash_height, ' '));
-            end if;
-         end loop;
-         for i in 1 .. g_ash_height loop
-            v_line := '';
-            for j in 1 .. gc_ash_graph_length loop
-              v_line := v_line || substr(g_ash_graph(mod(g_ash_idx+j-1, gc_ash_graph_length)+1).graph, g_ash_height-i+1, 1);
-            end loop;
-            g_ash_lines(i) := v_line;
-         end loop;
-
-      -- Re-draw the scales
-      -- -------------------------------
-      for i in 1 .. g_ash_scales.count loop
-         g_ash_scales(i) := round(g_max_aas_current * (g_ash_scales_height-i+1)/g_ash_height);
-      end loop;
-      end if;
-
-      g_ash_idx := g_ash_idx + 1;
-      if g_ash_idx > gc_ash_graph_length then
-         g_ash_idx := 1;
-      end if;
       -- Begin TOP Event summary...
       -- --------------------
       v_rows.extend(2);
@@ -882,7 +906,7 @@ create or replace package body moats as
                      then rpad('+',65,'-') || '+'
                      else rpad(' ', 66)
                   end;
-         v_row := v_row ||  lpad(g_ash_scales(i+1), 10) || ' | ' || to_color_ash(g_ash_lines(i)) || ' | ' || rpad(g_ash_scales(i+1), 6);
+         v_row := v_row ||  lpad(g_ash_scales(i+1), 10) || ' | ' || g_ash_lines_color(i) || ' | ' || rpad(g_ash_scales(i+1), 6);
 
          v_rows(v_rows.last) := moats_output_ot(v_row);
       end loop;
@@ -1125,6 +1149,16 @@ create or replace package body moats as
          -- v_cnt := v_rows.count + 1;
          v_cnt := 0;
 
+         v_lower_snap := get_ash_window_lower_snap( p_lower_snap => v_lower_snap,
+                                                    p_upper_snap => v_upper_snap,
+                                                    p_refresh_rate => p_refresh_rate,
+                                                    p_ash_window_size => p_ash_window_size );
+
+         -- Draw the colorfull Active Session Graph...
+         -- ------------------------------------------
+         draw_active_session_graph( p_lower_snap => v_lower_snap,
+                                    p_upper_snap => v_upper_snap);
+
          -- Instance summary...
          -- -------------------
          v_rows := instance_summary( p_lower_snap => v_lower_snap,
@@ -1135,11 +1169,6 @@ create or replace package body moats as
          end loop;
          --pipe row (gc_space);
          v_cnt := v_cnt + v_rows.count;
-
-         v_lower_snap := get_ash_window_lower_snap( p_lower_snap => v_lower_snap,
-                                                    p_upper_snap => v_upper_snap,
-                                                    p_refresh_rate => p_refresh_rate,
-                                                    p_ash_window_size => p_ash_window_size );
 
          -- Top SQL and waits section...
          -- ----------------------------
