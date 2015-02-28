@@ -1096,13 +1096,9 @@ create or replace package body moats as
 
    begin
 
-      -- Initial the screen size variable and some sanity check ...
+      -- Init the screen size variable and some sanity check ...
       -- -----------------------------------------------------------
       init_screen_variables( p_screen_size, p_ash_height, p_sql_height);
-
-      -- Initial Active Session Graph variables
-      -- ---------------------------------------
-      init_ash_graph_variables();
 
       -- Initial clear screen and stabiliser...
       -- --------------------------------------
@@ -1121,15 +1117,13 @@ create or replace package body moats as
       end loop;
       pipe row (moats_output_ot('Please wait : fetching data for first refresh...'));
 
+      -- Init Active Session Graph variables
+      -- ---------------------------------------
+      init_ash_graph_variables();
+
       -- Begin TOP refreshes...
       -- ----------------------
       loop
-
-         -- Clear screen...
-         -- ---------------
-         for i in 1 .. g_screen_size loop
-            pipe row (gc_space);
-         end loop;
 
          -- Take some ASH/STAT samples...
          -- -----------------------------
@@ -1158,6 +1152,12 @@ create or replace package body moats as
          -- ------------------------------------------
          draw_active_session_graph( p_lower_snap => v_lower_snap,
                                     p_upper_snap => v_upper_snap);
+
+         -- Clear screen...
+         -- ---------------
+         for i in 1 .. g_screen_size loop
+            pipe row (gc_space);
+         end loop;
 
          -- Instance summary...
          -- -------------------
