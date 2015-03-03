@@ -136,7 +136,7 @@ create or replace package body moats as
                 moats_output_ot('MOATS: The Mother Of All Tuning Scripts v1.0 by Adrian Billington & Tanel Poder'),
                 moats_output_ot('       http://www.oracle-developer.net & http://www.e2sn.com'),
                 moats_output_ot(''),
-                moats_output_ot('MOATS RAC Dashboard: V2.0.7 ASH & STATS Monitoring For RAC by Sidney Chen'),
+                moats_output_ot('MOATS RAC Dashboard: V2.0.7.2 ASH & STATS Monitoring For RAC by Sidney Chen'),
                 moats_output_ot('       sidney.chen@oracle.com(http://dbsid.com)')
                 );
    end banner;
@@ -1103,7 +1103,7 @@ create or replace package body moats as
       -- Initial clear screen and stabiliser...
       -- --------------------------------------
       v_rows := banner();
-      -- fill the initial "blank screen" (this is needed for arraysize = 2*g_screen_size to work)   
+      -- fill the initial "blank screen" (this is needed for arraysize = 2*g_screen_size to work)
       for i in 1 .. g_screen_size loop
          pipe row (gc_space);
       end loop;
@@ -1116,6 +1116,8 @@ create or replace package body moats as
          pipe row (gc_space);
       end loop;
       pipe row (moats_output_ot('Please wait : fetching data for first refresh...'));
+      -- singce the first sqlplus fetech size is 1, output an additional space row) 
+      pipe row (gc_space);
 
       -- Init Active Session Graph variables
       -- ---------------------------------------
