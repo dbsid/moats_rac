@@ -31,11 +31,17 @@ grant create procedure to &moats_priv_target;
 grant execute on dbms_lock to &moats_priv_target;
 grant select on v_$database to &moats_priv_target;
 grant select on gv_$session to &moats_priv_target;
+grant select on v_$session to &moats_priv_target;
 grant select on gv_$statname to &moats_priv_target;
+grant select on v_$statname to &moats_priv_target;
 grant select on gv_$sysstat to &moats_priv_target;
+grant select on v_$sysstat to &moats_priv_target;
 grant select on gv_$osstat to &moats_priv_target;
+grant select on v_$osstat to &moats_priv_target;
 grant select on gv_$timer to &moats_priv_target;
+grant select on v_$timer to &moats_priv_target;
 grant select on gv_$sql to &moats_priv_target;
+grant select on v_$sql to &moats_priv_target;
 
 undefine moats_priv_target;
 
