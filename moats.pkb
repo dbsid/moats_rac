@@ -375,7 +375,7 @@ create or replace package body moats as
       v_sql := replace( v_sql_template, '%sid%', 'sid');
       v_sql := replace( v_sql, '%preds%',  q'[    status = 'ACTIVE'
                                               and (wait_class != 'Idle' or state != 'WAITING')
-                                              and (sql_id not in (select sql_id from v$session where sid=sys_context('userenv', 'sid'))) ]' );
+                                              and (sql_id is null or (sql_id not in (select sql_id from v$session where sid=sys_context('userenv', 'sid')))) ]' );
                            
       execute immediate v_sql bulk collect into g_ash(p_index);
 
@@ -826,7 +826,7 @@ create or replace package body moats as
                 multiset(
                    select i_ash.sid || '@' || i_ash.inst_id
                    from   ash_data i_ash
-                   where  i_ash.sql_id = o_ash.sql_id
+                   where   nvl(i_ash.sql_id,'X') = nvl(o_ash.sql_id,'X')
                    group  by
                           i_ash.sid, i_ash.inst_id
                    order  by
@@ -835,13 +835,13 @@ create or replace package body moats as
       ,      (
                    select  top_event
                    from    ash_sql_event i_ash
-                   where   i_ash.sql_id = o_ash.sql_id
+                   where   nvl(i_ash.sql_id,'X') = nvl(o_ash.sql_id,'X')
                    and     i_ash.row_number = 1
                    ) as first_top_event
       ,      (
                    select  top_event
                    from    ash_sql_event i_ash
-                   where   i_ash.sql_id = o_ash.sql_id
+                   where   nvl(i_ash.sql_id,'X') = nvl(o_ash.sql_id,'X')
                    and     i_ash.row_number = 2 
                    ) as second_top_event
       bulk collect into v_top_sqls
